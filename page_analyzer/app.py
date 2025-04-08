@@ -4,7 +4,7 @@ import os
 from dotenv import load_dotenv
 
 from validation import is_valid_url
-from database import check_url_existence, add_url, get_one_url
+from database import check_url_existence, add_urls, get_one_url
 
 
 
@@ -39,7 +39,7 @@ def add_url():
     
     # если юрл уже есть - редиректим на конкретный юрл
     # если все норм, то редиректим на конретный юрл
-    new_url = add_url(url_name)
+    new_url = add_urls(url_name)
     
     return redirect(url_for('show_url_by_id', url_id=new_url.id))
 
