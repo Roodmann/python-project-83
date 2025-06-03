@@ -48,3 +48,21 @@ def get_one_url(app, url_id):
     cur.execute('SELECT * FROM urls WHERE id = %s;', (url_id,))
     row = cur.fetchone()
     return row
+
+
+def get_checks_for_url(app, url_id):
+    conn = get_db(app)
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM checks WHERE url_id = ?", (url_id,))
+    checks = cur.fetchall()
+    conn.close()
+    return checks
+
+
+
+def get_all_urls(app):
+    conn = get_db(app)
+    cur = conn.cursor()
+    cur.execute("SELECT id, name FROM urls ORDER BY id DESC")
+    urls = cur.fetchall()
+    return urls
