@@ -53,7 +53,7 @@ def get_one_url(app, url_id):
 def get_checks_for_url(app, url_id):
     conn = get_db(app)
     cur = conn.cursor()
-    cur.execute("SELECT * FROM checks WHERE url_id = ?", (url_id,))
+    cur.execute("SELECT * FROM checks WHERE url_id = %s", (url_id,))
     checks = cur.fetchall()
     conn.close()
     return checks

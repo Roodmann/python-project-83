@@ -84,7 +84,11 @@ def create_check(id):
 def show_url(url_id):
     _url = get_one_url(app, url_id)  # Функция, которая получает URL по ID
     checks = get_checks_for_url(url_id)  # Получаем все проверки для данного URL ID
-    return render_template('urls.html', url=_url, checks=checks)
+    if _url:
+        return render_template('url.html', url=_url, checks=checks)
+    else:
+        flash('URL not found', 'error')
+        return redirect(url_for('get_urls'))
 
 """"
 existing_url = check_url_existence(url_name) должен быть existing_url = check_url_existence(app, normalized_url_name)

@@ -1,11 +1,5 @@
 from urllib.parse import urlparse, urlunparse
 
-def is_valid_url(url):
-    
-    if len(url) > 255:
-        
-        return False
-
 
 def normalize_url(url):
     # Разбираем URL
@@ -22,3 +16,12 @@ def normalize_url(url):
     normalized_url = urlunparse((scheme, netloc, path, parsed_url.params, parsed_url.query, parsed_url.fragment))
 
     return normalized_url
+
+
+def is_valid_url(url):
+    
+    if len(url) > 255:
+        
+        return False
+
+
