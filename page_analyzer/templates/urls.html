@@ -18,23 +18,27 @@
 <body>
     <h1>Детали URL</h1>
     <p>URL: {{ url.url }}</p>
-<table data-test="checks">
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Дата проверки</th>
-      <th>Статус</th>
-
-    </tr>
-  </thead>
-  <tbody>
-    {% for check in checks %}
-      <tr>
-        <td>{{ check.id }}</td>
-        <td>{{ check.check_date }}</td>
-        <td>{{ check.status }}</td>
-
-      </tr>
-    {% endfor %}
-  </tbody>
-</table>
+    <table data-test="checks">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Дата проверки</th>
+          <th>Статус</th>
+          <th>Детали</th> <!-- добавляем колонку для ссылки -->
+        </tr>
+      </thead>
+      <tbody>
+        {% for check in checks %}
+          <tr>
+            <td>{{ check.id }}</td>
+            <td>{{ check.check_date }}</td>
+            <td>{{ check.status }}</td>
+            <td>
+              <a href="{{ url_for('show_url_by_id', id=some_variable) }}">Подробнее</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+</body>
+</html>

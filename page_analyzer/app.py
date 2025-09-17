@@ -50,6 +50,8 @@ def add_url():
 
 @app.get("/urls")
 def get_urls():
+    """возвращает список всех URL"""
+    
     # Получаем из бд наши юрлы
     urls = get_all_urls(app)
     # Добавляем их в шаблон и воззвращаем его
@@ -59,11 +61,13 @@ def get_urls():
 
 @app.get('/urls/<int:url_id>')
 def show_url_by_id(url_id):
+    """получаем детали URL по его id"""
+    
     # получаем юрл из бд
     _url = get_one_url(app, url_id)
     # если все нормально, то возвращаем шаблон с нужными данными
     if _url:
-        return render_template('urls.html', url=_url)
+        return render_template('url.html', url=_url)
     # если проблемы, то флэшим сообщение и редиректим на список с урлами
     else:
         flash('URL not found', 'error')
@@ -80,19 +84,3 @@ def create_check(id):
     return f"Проверка создана. URL ID: {url_id}, Created at: {created_at}"
 
 
-@app.route('/urls/<int:url_id>')
-def show_url(url_id):
-    _url = get_one_url(app, url_id)  # Функция, которая получает URL по ID
-    checks = get_checks_for_url(url_id)  # Получаем все проверки для данного URL ID
-    if _url:
-        return render_template('url.html', url=_url, checks=checks)
-    else:
-        flash('URL not found', 'error')
-        return redirect(url_for('get_urls'))
-
-""""
-existing_url = check_url_existence(url_name) должен быть existing_url = check_url_existence(app, normalized_url_name)
-(обрати внимание, что здесь лучше использовать уже нормализованный URL).
-new_url = add_urls(url_name) должен быть new_url = add_urls(app, normalized_url_name).
-_url = get_one_url(url_id) должен быть _url = get_one_url(app, url_id). 
-"""
