@@ -66,3 +66,14 @@ def get_all_urls(app):
     cur.execute("SELECT id, name FROM urls ORDER BY id DESC")
     urls = cur.fetchall()
     return urls
+
+
+def create_check_entry(app, url_id, status_code, created_at):
+    conn = get_db(app)
+    cur = conn.cursor()
+
+    cur.execute(
+        "INSERT INTO checks (url_id, status_code, created_at) VALUES (%s, %s, %s)",
+    (url_id, status_code, created_at) )
+    conn.commit()
+    conn.close()

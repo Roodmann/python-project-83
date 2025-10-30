@@ -1,10 +1,12 @@
 
 from flask import Flask, render_template, request, flash, redirect, url_for
 import os
+import requests
 from dotenv import load_dotenv
 
+
 from validation import is_valid_url, normalize_url
-from .database import check_url_existence, add_urls, get_one_url, get_checks_for_url, get_all_urls
+from .database import check_url_existence, add_urls, get_one_url, get_all_urls, create_check_entry
 from datetime import datetime
 
 
@@ -17,11 +19,15 @@ app.config['DATABASE_URL'] = os.getenv('DATABASE_URL')
 
 @app.route('/')
 def index():
+    """Обработчик главной страницы сайта"""
+    
     return render_template('index.html')
 
 
 @app.post("/urls")
 def add_url():
+    """Обработчик POST-запроса для добавления нового URL"""
+    
     # получаем данные из формы request.form
     url_name = request.form.get('url')
     # нормализуем URL
@@ -50,7 +56,7 @@ def add_url():
 
 @app.get("/urls")
 def get_urls():
-    """возвращает список всех URL"""
+    """Обработчик GET-запроса для получения списка всех URL"""
     
     # Получаем из бд наши юрлы
     urls = get_all_urls(app)
@@ -61,7 +67,7 @@ def get_urls():
 
 @app.get('/urls/<int:url_id>')
 def show_url_by_id(url_id):
-    """получаем детали URL по его id"""
+    """Обработчик GET-запроса для отображения деталей конкретного URL по его ID"""
     
     # получаем юрл из бд
     _url = get_one_url(app, url_id)
@@ -75,12 +81,27 @@ def show_url_by_id(url_id):
         return redirect(url_for('get_urls'))
 
 
-# Обработчик маршрута POST /urls/<id>/checks
 @app.route('/urls/<int:id>/checks', methods=['POST'])
 def create_check(id):
-    # Получаем данные из запроса
-    url_id = id
-    created_at = datetime.now()
-    return f"Проверка создана. URL ID: {url_id}, Created at: {created_at}"
+    """Обработчик для создания новой проверки статуса указанного URL"""
+    
+    url_obj = get_one_url(app, id)  # Получение объекта URL
+    #Если URL не найден, выводит сообщение об ошибке и перенаправляет на страницу списка URL.
+    if not url_obj: 
+        flash("URL не найден", "error")
+        return redirect(url_for('get_urls'))
 
+    created_at = datetime.now()# Текущая дата и время для записи проверки
 
+    try:
+        response = requests.get(url_obj.name, timeout=3)# Выполняем запрос к указанному URL с тайм-аутом
+        response.raise_for_status()# Проверяем, что запрос прошел успешно
+        flash('Страница успешно проверена', 'success')
+        # Создаем новую запись проверки в базе данных
+        create_check_entry(app, url_obj.id, response.status_code, created_at)
+    
+    except requests.RequestException:
+        # В случае ошибки при выполнении запроса выводим сообщение об ошибке
+        flash('Произошла ошибка при проверке', 'danger')
+        # Перенаправляем пользователя на страницу с деталями URL
+        return redirect(url_for('show_url_by_id', url_id=id)) 
