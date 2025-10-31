@@ -2,6 +2,8 @@ from urllib.parse import urlparse, urlunparse
 
 
 def normalize_url(url):
+    """Нормализует указанный URL"""
+    
     # Разбираем URL
     parsed_url = urlparse(url)
 
@@ -19,6 +21,7 @@ def normalize_url(url):
 
 
 def is_valid_url(url):
+    """Проверяет длину URL"""
     
     if len(url) > 255:
         

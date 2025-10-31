@@ -104,4 +104,5 @@ def create_check(id):
         # В случае ошибки при выполнении запроса выводим сообщение об ошибке
         flash('Произошла ошибка при проверке', 'danger')
         # Перенаправляем пользователя на страницу с деталями URL
-        return redirect(url_for('show_url_by_id', url_id=id)) 
+        return redirect(url_for('show_url_by_id', url_id=id))
+
