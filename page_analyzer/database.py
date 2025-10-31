@@ -83,4 +83,5 @@ def create_check_entry(app, url_id, status_code, created_at):
     (url_id, status_code, created_at) )
     conn.commit()
     conn.close()
-
+# Коммент, не заливается зараза на гитхаб))))) делаю  повторно пуш
+# Смайл, смайл, смайл
