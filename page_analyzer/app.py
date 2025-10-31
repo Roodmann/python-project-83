@@ -106,3 +106,4 @@ def create_check(id):
         # Перенаправляем пользователя на страницу с деталями URL
         return redirect(url_for('show_url_by_id', url_id=id))
 
+# Не заливается(
