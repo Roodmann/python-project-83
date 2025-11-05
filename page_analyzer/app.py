@@ -5,7 +5,7 @@ import requests
 from dotenv import load_dotenv
 
 
-from validation import is_valid_url, normalize_url
+from page_analyzer.url_validator import is_valid_url, normalize_url
 from .database import check_url_existence, add_urls, get_one_url, get_all_urls, create_check_entry
 from datetime import datetime
 
@@ -105,5 +105,3 @@ def create_check(id):
         flash('Произошла ошибка при проверке', 'danger')
         # Перенаправляем пользователя на страницу с деталями URL
         return redirect(url_for('show_url_by_id', url_id=id))
-
-# Не заливается(

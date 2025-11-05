@@ -83,5 +83,15 @@ def create_check_entry(app, url_id, status_code, created_at):
     (url_id, status_code, created_at) )
     conn.commit()
     conn.close()
-# Коммент, не заливается зараза на гитхаб))))) делаю  повторно пуш
-# Смайл, смайл, смайл
+ 
+
+def save_check_result(app, url, check_result):
+    """Сохраняет результаты проверки в базу данных"""
+
+    conn = get_db(app)
+    cur = conn.cursor()
+    cur.execute('''
+        INSERT INTO checks (url, h1, title, description)
+        VALUES (%s, %s, %s, %s)
+    ''', (url, check_result['h1'], check_result['title'], check_result['description']))
+    conn.commit()
