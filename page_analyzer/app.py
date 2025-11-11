@@ -84,24 +84,38 @@ def show_url_by_id(url_id):
 @app.route('/urls/<int:id>/checks', methods=['POST'])
 def create_check(id):
     """Обработчик для создания новой проверки статуса указанного URL"""
+
+    print(f"Запуск проверки для URL с ID: {id}")
     
     url_obj = get_one_url(app, id)  # Получение объекта URL
+    print(f"Объект URL из базы: {url_obj}")
     #Если URL не найден, выводит сообщение об ошибке и перенаправляет на страницу списка URL.
-    if not url_obj: 
+    if not url_obj:
+        print("URL не найден в базе данных.")
         flash("URL не найден", "error")
         return redirect(url_for('get_urls'))
 
     created_at = datetime.now()# Текущая дата и время для записи проверки
+    print(f"Дата и время проверки: {created_at}")
 
     try:
+        print(f"Выполнение GET-запроса к URL: {url_obj.name}")
         response = requests.get(url_obj.name, timeout=3)# Выполняем запрос к указанному URL с тайм-аутом
+        print(f"Ответ получен с кодом: {response.status_code}")
         response.raise_for_status()# Проверяем, что запрос прошел успешно
+        print("Запрос прошел успешно.")
         flash('Страница успешно проверена', 'success')
         # Создаем новую запись проверки в базе данных
         create_check_entry(app, url_obj.id, response.status_code, created_at)
+        print("Запись о проверке успешно добавлена.")
     
-    except requests.RequestException:
+    except requests.RequestException as e:
+        print(f"Ошибка при запросе: {e}")
         # В случае ошибки при выполнении запроса выводим сообщение об ошибке
         flash('Произошла ошибка при проверке', 'danger')
         # Перенаправляем пользователя на страницу с деталями URL
         return redirect(url_for('show_url_by_id', url_id=id))
+
+
+if __name__ == '__main__':
+    app.run(debug=True)

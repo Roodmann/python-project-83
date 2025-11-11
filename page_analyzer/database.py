@@ -83,7 +83,7 @@ def create_check_entry(app, url_id, status_code, created_at):
     (url_id, status_code, created_at) )
     conn.commit()
     conn.close()
- 
+
 
 def save_check_result(app, url, check_result):
     """Сохраняет результаты проверки в базу данных"""
