@@ -1,44 +1,51 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Детали URL</title>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-    </style>
-</head>
-<body>
-    <h1>Детали URL</h1>
-    <p>URL: {{ url.url }}</p>
-    <table data-test="checks">
-      <thead>
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+  <h1 class="mb-4">Список URL</h1>
+  <table class="table table-bordered table-striped align-middle">
+    <thead class="table-dark">
+      <tr>
+        <th>ID</th>
+        <th>Имя</th>
+        <th>Последняя проверка</th>
+        <th>Код ответа</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if urls %}
+        {% for url in urls %}
         <tr>
-          <th>ID</th>
-          <th>Дата проверки</th>
-          <th>Статус</th>
-          <th>Детали</th> <!-- добавляем колонку для ссылки -->
+          <td>{{ url['id'] }}</td>
+          <td>
+            <a href="{{ url_for('show_url_by_id', url_id=url['id']) }}" style="text-decoration: none; color: #f5f5f5;">
+              {{ url['name'] }}
+            </a>
+          </td>
+          <td>
+            {% if url['created_at'] %}
+              {{ url['created_at'] }}
+            {% else %}
+              -
+            {% endif %}
+          </td>
+          <td>
+            {% if url['status_code'] %}
+              {{ url['status_code'] }}
+            {% else %}
+              -
+            {% endif %}
+          </td>
         </tr>
-      </thead>
-      <tbody>
-        {% for check in checks %}
-          <tr>
-            <td>{{ check.id }}</td>
-            <td>{{ check.check_date }}</td>
-            <td>{{ check.status }}</td>
-            <td>
-              <a href="{{ url_for('show_url_by_id', id=some_variable) }}">Подробнее</a>
-            </td>
-          </tr>
         {% endfor %}
-      </tbody>
-    </table>
-</body>
-</html>
+      {% else %}
+        <tr>
+          <td colspan="4" class="text-center">Нет данных для отображения</td>
+        </tr>
+      {% endif %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+
+

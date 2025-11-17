@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 
 from page_analyzer.url_validator import is_valid_url, normalize_url
-from .database import check_url_existence, add_urls, get_one_url, get_all_urls, create_check_entry
+from .database import check_url_existence, add_urls, get_one_url, get_all_urls, create_check_entry, get_checks_for_url
 from datetime import datetime
 
 
@@ -17,7 +17,7 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['DATABASE_URL'] = os.getenv('DATABASE_URL')
 # app.run()
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
     """Обработчик главной страницы сайта"""
     
@@ -41,17 +41,17 @@ def add_url():
                                 url_name=url_name
                                 ), 422
     # Добавляем юрл (через псукопг)
-    existing_url = check_url_existence(app, normalized_url_name)
+    existing_url_id = check_url_existence(app, normalized_url_name)
     
     # Если URL уже существует, редиректим на страницу с существующим коротким URL
-    if existing_url:
-        return redirect(url_for('show_url_by_id', url_id=existing_url.id))
+    if existing_url_id:
+        return redirect(url_for('show_url_by_id', url_id=existing_url_id))
     
     # если юрл уже есть - редиректим на конкретный юрл
     # если все норм, то редиректим на конретный юрл
-    new_url =add_urls(app, normalized_url_name)
+    new_url_id =add_urls(app, normalized_url_name)
     
-    return redirect(url_for('show_url_by_id', url_id=new_url.id))
+    return redirect(url_for('show_url_by_id', url_id=new_url_id))
 
 
 @app.get("/urls")
@@ -70,10 +70,11 @@ def show_url_by_id(url_id):
     """Обработчик GET-запроса для отображения деталей конкретного URL по его ID"""
     
     # получаем юрл из бд
-    _url = get_one_url(app, url_id)
+    url_obj = get_one_url(app, url_id)
     # если все нормально, то возвращаем шаблон с нужными данными
-    if _url:
-        return render_template('url.html', url=_url)
+    if url_obj:
+        url_checks = get_checks_for_url(app, url_id)
+        return render_template('url.html', url=url_obj, url_checks=url_checks)
     # если проблемы, то флэшим сообщение и редиректим на список с урлами
     else:
         flash('URL not found', 'error')
@@ -108,6 +109,7 @@ def create_check(id):
         # Создаем новую запись проверки в базе данных
         create_check_entry(app, url_obj.id, response.status_code, created_at)
         print("Запись о проверке успешно добавлена.")
+        return redirect(url_for('show_url_by_id', url_id=id))
     
     except requests.RequestException as e:
         print(f"Ошибка при запросе: {e}")

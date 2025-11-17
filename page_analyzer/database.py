@@ -1,5 +1,6 @@
 
 import psycopg2
+from psycopg2.extras import RealDictCursor
 
 
 
@@ -44,9 +45,10 @@ def get_one_url(app, url_id):
     """Получает информацию о URL по его ID из базы данных"""
     
     conn = get_db(app)
-    cur = conn.cursor()
+    cur = conn.cursor(cursor_factory=RealDictCursor)
     cur.execute('SELECT * FROM urls WHERE id = %s;', (url_id,))
     row = cur.fetchone()
+    conn.close()
     return row
 
 
@@ -55,7 +57,7 @@ def get_checks_for_url(app, url_id):
     
     conn = get_db(app)
     cur = conn.cursor()
-    cur.execute("SELECT * FROM checks WHERE url_id = %s", (url_id,))
+    cur.execute("SELECT * FROM url_checks WHERE url_id = %s", (url_id,))
     checks = cur.fetchall()
     conn.close()
     return checks
@@ -69,6 +71,7 @@ def get_all_urls(app):
     cur = conn.cursor()
     cur.execute("SELECT id, name FROM urls ORDER BY id DESC")
     urls = cur.fetchall()
+    conn.close()
     return urls
 
 
@@ -79,7 +82,7 @@ def create_check_entry(app, url_id, status_code, created_at):
     cur = conn.cursor()
 
     cur.execute(
-        "INSERT INTO checks (url_id, status_code, created_at) VALUES (%s, %s, %s)",
+        "INSERT INTO url_checks (url_id, status_code, created_at) VALUES (%s, %s, %s)",
     (url_id, status_code, created_at) )
     conn.commit()
     conn.close()
@@ -91,7 +94,8 @@ def save_check_result(app, url, check_result):
     conn = get_db(app)
     cur = conn.cursor()
     cur.execute('''
-        INSERT INTO checks (url, h1, title, description)
+        INSERT INTO url_checks (url, h1, title, description)
         VALUES (%s, %s, %s, %s)
     ''', (url, check_result['h1'], check_result['title'], check_result['description']))
     conn.commit()
+    conn.close()

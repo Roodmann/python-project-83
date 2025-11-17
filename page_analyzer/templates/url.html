@@ -1,34 +1,38 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>URL Details</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <div class="container">
-        <h1>Детали адреса</h1>
-        <p>URL: <span id="url">https://example.com</span></p>
-        <p>Дата создания: <span id="creation-date">22 июня 2025 года</span></p>
-        <!-- Другие детали адреса -->
+{% extends "base.html" %}
 
-        <h2>Таблица проверок</h2>
-        <table data-test="checks">
-            <thead>
-                <tr>
-                    <th>Дата проверки</th>
-                    <th>Результат</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Строки с результатами проверок будут добавляться здесь -->
-            </tbody>
-        </table>
-
-        <button id="check-button">Проверить</button>
-    </div>
-
-    <script src="script.js"></script>
-</body>
-</html>
+{% block content %}
+<div class="container py-4">
+  <h1 class="mb-4">История проверок для: {{ url.name }}</h1>
+  <a href="{{ url_for('get_urls') }}" class="btn btn-secondary mb-3">Вернуться к списку сайтов</a>
+  <table class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Код ответа</th>
+        <th>h1</th>
+        <th>title</th>
+        <th>description</th>
+        <th>Дата проверки</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if url_checks %}
+        {% for check in url_checks %}
+        <tr>
+          <td>{{ check.id }}</td>
+          <td>{{ check.status_code }}</td>
+          <td>{{ check.h1 }}</td>
+          <td>{{ check.title }}</td>
+          <td>{{ check.description }}</td>
+          <td>{{ check.created_at }}</td>
+        </tr>
+        {% endfor %}
+      {% else %}
+        <tr>
+          <td colspan="6" class="text-center">Нет данных о проверках</td>
+        </tr>
+      {% endif %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
