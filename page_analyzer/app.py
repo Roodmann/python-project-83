@@ -1,12 +1,26 @@
 
-from flask import Flask, render_template, request, flash, redirect, url_for
+from flask import (Flask, 
+                    render_template, 
+                    request, 
+                    flash, 
+                    redirect, 
+                    url_for
+                )
+
 import os
 import requests
 from dotenv import load_dotenv
 
 
 from page_analyzer.url_validator import is_valid_url, normalize_url
-from .database import check_url_existence, add_urls, get_one_url, get_all_urls, create_check_entry, get_checks_for_url
+
+from .database import (check_url_existence, 
+                    add_urls, 
+                    get_one_url, 
+                    get_all_urls, 
+                    create_check_entry, 
+                    get_checks_for_url
+                )
 from datetime import datetime
 
 
@@ -15,13 +29,13 @@ load_dotenv()
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['DATABASE_URL'] = os.getenv('DATABASE_URL')
-# app.run()
+#app.run()
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     """Обработчик главной страницы сайта"""
-    
-    return render_template('index.html')
+    urls = get_all_urls(app)  # получаете список URL-ов из базы данных
+    return render_template('index.html', urls=urls)
 
 
 @app.post("/urls")
