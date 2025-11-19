@@ -1,4 +1,4 @@
-
+from . import parser
 from flask import (Flask, 
                     render_template, 
                     request, 
@@ -10,7 +10,7 @@ from flask import (Flask,
 import os
 import requests
 from dotenv import load_dotenv
-
+from datetime import datetime
 
 from page_analyzer.url_validator import is_valid_url, normalize_url
 
@@ -21,7 +21,8 @@ from .database import (check_url_existence,
                     create_check_entry, 
                     get_checks_for_url
                 )
-from datetime import datetime
+
+
 
 
 
@@ -123,6 +124,10 @@ def create_check(id):
         # Создаем новую запись проверки в базе данных
         create_check_entry(app, url_obj.id, response.status_code, created_at)
         print("Запись о проверке успешно добавлена.")
+        # Парсим HTML-ответ
+        html_content = response.text
+        parsed_data = parser.check_page(html_content)
+        flash(f"Результаты парсинга: {parsed_data}")
         return redirect(url_for('show_url_by_id', url_id=id))
     
     except requests.RequestException as e:

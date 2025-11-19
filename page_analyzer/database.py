@@ -8,7 +8,12 @@ from contextlib import contextmanager
 def get_db(app):
     """соединение с базой данных"""
     
-    conn = psycopg2.connect(app.config["DATABASE_URL"])
+    try:
+        print("Попытка подключения к базе по URL:", app.config["DATABASE_URL"])
+        conn = psycopg2.connect(app.config["DATABASE_URL"])
+    except Exception as e:
+        print("Ошибка при подключении к базе данных:", e)
+        raise
     try:
         yield conn
     finally:
