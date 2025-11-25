@@ -16,3 +16,5 @@ render-start:
 lint-fix:
 	uv run ruff check -- fix
 
+postgresql:
+	sudo service postgresql start
