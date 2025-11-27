@@ -3,6 +3,11 @@
 {% block content %}
 <div class="container py-4">
   <h1 class="mb-4">История проверок для: {{ url.name }}</h1>
+  <h2>Проверка</h2>
+  <form action="{{ url_for('create_check', id=url_obj['id']) }}" method="post">
+    <input type="hidden" name="url" value="{{ url_obj['name'] }}">
+    <button type="submit" class="btn btn-primary">Запустить проверку</button>
+</form>
   <a href="{{ url_for('get_urls') }}" class="btn btn-secondary mb-3">Вернуться к списку сайтов</a>
   <table class="table table-bordered table-striped">
     <thead>

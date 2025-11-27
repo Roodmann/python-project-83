@@ -1,4 +1,4 @@
-from . import parser
+from page_analyzer.parser import check_page
 from flask import (Flask, 
                     render_template, 
                     request, 
@@ -21,7 +21,6 @@ from .database import (check_url_existence,
                     create_check_entry, 
                     get_checks_for_url
                 )
-
 
 
 
@@ -126,7 +125,7 @@ def create_check(id):
         print("Запись о проверке успешно добавлена.")
         # Парсим HTML-ответ
         html_content = response.text
-        parsed_data = parser.check_page(html_content)
+        parsed_data = check_page(html_content)
         flash(f"Результаты парсинга: {parsed_data}")
         return redirect(url_for('show_url_by_id', url_id=id))
     
@@ -136,7 +135,3 @@ def create_check(id):
         flash('Произошла ошибка при проверке', 'danger')
         # Перенаправляем пользователя на страницу с деталями URL
         return redirect(url_for('show_url_by_id', url_id=id))
-
-
-if __name__ == '__main__':
-    app.run(debug=True)

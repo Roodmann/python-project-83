@@ -105,4 +105,3 @@ def save_check_result(app, url, check_result):
                     check_result['description'])
                 )
         conn.commit()
-
