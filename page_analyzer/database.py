@@ -7,7 +7,6 @@ from contextlib import contextmanager
 @contextmanager
 def get_db(app):
     """соединение с базой данных"""
-    
     try:
         print("Попытка подключения к базе по URL:", app.config["DATABASE_URL"])
         conn = psycopg2.connect(app.config["DATABASE_URL"])
@@ -15,7 +14,8 @@ def get_db(app):
         print("Ошибка при подключении к базе данных:", e)
         raise
     try:
-        yield conn
+        with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+            yield cursor
     finally:
         conn.close()
 
