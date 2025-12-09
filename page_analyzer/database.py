@@ -7,15 +7,15 @@ from contextlib import contextmanager
 @contextmanager
 def get_db(app):
     """соединение с базой данных"""
+    print("Попытка подключения к базе по URL:", app.config["DATABASE_URL"])
+    conn = psycopg2.connect(
+        app.config["DATABASE_URL"],
+        connect_timeout=10 # Тайм-аут для попытки установить соединение с базой данных
+    )
     try:
-        print("Попытка подключения к базе по URL:", app.config["DATABASE_URL"])
-        conn = psycopg2.connect(app.config["DATABASE_URL"])
-    except Exception as e:
-        print("Ошибка при подключении к базе данных:", e)
-        raise
-    try:
-        with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-            yield cursor
+        with conn.cursor() as cur:
+            cur.execute("SET statement_timeout = %s", (10000,)) # Устанавливаем тайм-аут для выполнения каждого SQL-запроса в рамках текущей сессии.
+        yield conn
     finally:
         conn.close()
 
@@ -25,12 +25,12 @@ def check_url_existence(app, url_name):
     """Проверяет наличие URL с заданным именем в базе данных"""
     
     with get_db(app) as conn:
-        with conn.cursor() as cur:
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute("SELECT id FROM urls WHERE name = %s", (url_name,))
             result = cur.fetchone()
 
     if result:
-        url_id = result[0] # Идентификатор URL, если он существует в базе данных
+        url_id = result['id'] # Идентификатор URL, если он существует в базе данных
     else:
         url_id = None # Значение None, если URL с таким именем не найден
     
