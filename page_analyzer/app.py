@@ -34,7 +34,7 @@ app.config['DATABASE_URL'] = os.getenv('DATABASE_URL')
 @app.route('/')
 def index():
     """Обработчик главной страницы сайта"""
-    urls = get_all_urls(app)  # получаете список URL-ов из базы данных
+
     return render_template('index.html')
 
 
