@@ -31,11 +31,11 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['DATABASE_URL'] = os.getenv('DATABASE_URL')
 #app.run()
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
 def index():
     """Обработчик главной страницы сайта"""
     urls = get_all_urls(app)  # получаете список URL-ов из базы данных
-    return render_template('index.html', urls=urls)
+    return render_template('index.html')
 
 
 @app.post("/urls")
@@ -48,12 +48,9 @@ def add_url():
     normalized_url_name = normalize_url(url_name)
     # валидируем наш юрл,  если ошибка, то выводим сообщение (flash_message) и редиректим на index
     if not is_valid_url(url_name):
-        flash("Некорректный URL! Пожалуйста введите корректный URL", "Error")
+        flash("Некорректный URL! Пожалуйста введите корректный URL", "danger")
 
-        return render_template(
-                                'index.html',
-                                url_name=url_name
-                                ), 422
+        return redirect(url_for('index'))
     # Добавляем юрл (через псукопг)
     existing_url_id = check_url_existence(app, normalized_url_name)
     
@@ -64,7 +61,8 @@ def add_url():
     # если юрл уже есть - редиректим на конкретный юрл
     # если все норм, то редиректим на конретный юрл
     new_url_id =add_urls(app, normalized_url_name)
-    
+    flash("Страница успешно добавлена", "success")
+
     return redirect(url_for('show_url_by_id', url_id=new_url_id))
 
 
@@ -91,7 +89,7 @@ def show_url_by_id(url_id):
         return render_template('url.html', url=url_obj, url_checks=url_checks)
     # если проблемы, то флэшим сообщение и редиректим на список с урлами
     else:
-        flash('URL not found', 'error')
+        flash('URL not found', 'danger')
         
         return redirect(url_for('get_urls'))
 
@@ -107,21 +105,21 @@ def create_check(id):
     #Если URL не найден, выводит сообщение об ошибке и перенаправляет на страницу списка URL.
     if not url_obj:
         print("URL не найден в базе данных.")
-        flash("URL не найден", "error")
+        flash("URL не найден", "danger")
         return redirect(url_for('get_urls'))
 
     created_at = datetime.now()# Текущая дата и время для записи проверки
     print(f"Дата и время проверки: {created_at}")
 
     try:
-        print(f"Выполнение GET-запроса к URL: {url_obj.name}")
-        response = requests.get(url_obj.name, timeout=3)# Выполняем запрос к указанному URL с тайм-аутом
+        print(f"Выполнение GET-запроса к URL: {url_obj['name']}")
+        response = requests.get(url_obj['name'], timeout=3)# Выполняем запрос к указанному URL с тайм-аутом
         print(f"Ответ получен с кодом: {response.status_code}")
         response.raise_for_status()# Проверяем, что запрос прошел успешно
         print("Запрос прошел успешно.")
         flash('Страница успешно проверена', 'success')
         # Создаем новую запись проверки в базе данных
-        create_check_entry(app, url_obj.id, response.status_code, created_at)
+        create_check_entry(app, url_obj['id'], response.status_code, created_at)
         print("Запись о проверке успешно добавлена.")
         # Парсим HTML-ответ
         html_content = response.text

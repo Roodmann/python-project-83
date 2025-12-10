@@ -3,10 +3,12 @@
 {% block content %}
 <div class="container py-4">
   <h1 class="mb-4">Анализатор страниц</h1>
-  <form action="{{ url_for('add_url') }}" method="post" class="d-flex justify-content-center mb-4" id="urlForm"></form>
-    <input type="text" name="url" id="url" placeholder="https://www.example.com" 
-          value="{{ request.form.url|default('') }}" class="form-control form-control-lg" required />
-    <input type="submit" class="btn btn-primary btn-lg ms-3 px-5 text-uppercase" value="Проверить" />
+  <form action="{{ url_for('add_url') }}" method="post" class="d-flex justify-content-center">
+      <label for="text" class="visually-hidden">Url для проверки</label>
+      <input type="text" name="url" id="url" placeholder="https://www.example.com"
+          value="{{ request.form.url|default('') }}" class="form-control form-control-lg" required>
+      <input type="submit" class="btn btn-secondary btn-lg ms-3 px-5 text-uppercase mx-3"
+          value="Проверить">
   </form>
 
   {% if url and results %}
