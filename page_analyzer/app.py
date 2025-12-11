@@ -42,22 +42,23 @@ def index():
 @app.post("/urls")
 def add_url():
     """Обработчик POST-запроса для добавления нового URL"""
-    
-    # Получаем данные из формы request.form
+
     url_name = request.form.get('url')
+    # Проверка валидности URL
     if not is_valid_url(url_name):
-        # Возврат JSON с ошибкой и статусом 422
+        # Возвращаем JSON с ошибкой и статусом 422
         return jsonify({"error": "Некорректный URL"}), 422
-    # Нормализуем URL
+    # Нормализация URL
     normalized_url_name = normalize_url(url_name)
-    # Возвращает идентификатор существующего URL, если он есть, или None, если нет.
+    # Проверка существования URL в базе
     existing_url_id = check_url_existence(app, normalized_url_name)
-    # Если URL с таким нормализованным адресом уже существует в базе,
-    # перенаправляем пользователя на страницу отображения этого существующего короткого URL.
     if existing_url_id:
+        # Если URL уже есть, перенаправляем на страницу отображения
         return redirect(url_for('show_url_by_id', url_id=existing_url_id))
+    # Добавление нового URL
     new_url_id = add_urls(app, normalized_url_name)
     flash("Страница успешно добавлена", "success")
+    
     return redirect(url_for('show_url_by_id', url_id=new_url_id))
 
 

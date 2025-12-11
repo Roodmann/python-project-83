@@ -21,9 +21,9 @@ def normalize_url(url):
 
 
 def is_valid_url(url):
-    """Проверяет длину URL"""
-    
+    """Проверяет, что URL валиден и длина не превышает 255 символов."""
     if len(url) > 255:
-        
         return False
-    return True
+    parsed = urlparse(url)
+    
+    return all([parsed.scheme in ("http", "https"), parsed.netloc])
