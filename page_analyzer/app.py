@@ -4,7 +4,8 @@ from flask import (Flask,
                     request, 
                     flash, 
                     redirect, 
-                    url_for
+                    url_for,
+                    jsonify
                 )
 
 import os
@@ -42,27 +43,21 @@ def index():
 def add_url():
     """Обработчик POST-запроса для добавления нового URL"""
     
-    # получаем данные из формы request.form
+    # Получаем данные из формы request.form
     url_name = request.form.get('url')
-    # нормализуем URL
-    normalized_url_name = normalize_url(url_name)
-    # валидируем наш юрл,  если ошибка, то выводим сообщение (flash_message) и редиректим на index
     if not is_valid_url(url_name):
-        flash("Некорректный URL! Пожалуйста введите корректный URL", "danger")
-
-        return redirect(url_for('index'))
-    # Добавляем юрл (через псукопг)
+        # Возврат JSON с ошибкой и статусом 422
+        return jsonify({"error": "Некорректный URL"}), 422
+    # Нормализуем URL
+    normalized_url_name = normalize_url(url_name)
+    # Возвращает идентификатор существующего URL, если он есть, или None, если нет.
     existing_url_id = check_url_existence(app, normalized_url_name)
-    
-    # Если URL уже существует, редиректим на страницу с существующим коротким URL
+    # Если URL с таким нормализованным адресом уже существует в базе,
+    # перенаправляем пользователя на страницу отображения этого существующего короткого URL.
     if existing_url_id:
         return redirect(url_for('show_url_by_id', url_id=existing_url_id))
-    
-    # если юрл уже есть - редиректим на конкретный юрл
-    # если все норм, то редиректим на конретный юрл
-    new_url_id =add_urls(app, normalized_url_name)
+    new_url_id = add_urls(app, normalized_url_name)
     flash("Страница успешно добавлена", "success")
-
     return redirect(url_for('show_url_by_id', url_id=new_url_id))
 
 
