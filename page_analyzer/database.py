@@ -83,14 +83,14 @@ def get_all_urls(app):
     return urls
 
 
-def create_check_entry(app, url_id, status_code, created_at):
+def create_check_entry(app, url_id, status_code, created_at, h1=None, title=None, description=None):
     """Создает новую запись проверки в базе данных с указанными параметрами"""
     
     with get_db(app) as conn:
         with conn.cursor() as cur: 
             cur.execute(
-                "INSERT INTO url_checks (url_id, status_code, created_at) VALUES (%s, %s, %s)",
-                (url_id, status_code, created_at))
+                "INSERT INTO url_checks (url_id, status_code, h1, title, description, created_at) VALUES (%s, %s, %s)",
+                (url_id, status_code, h1, title, description, created_at))
         conn.commit()
 
 def save_check_result(app, url, check_result):

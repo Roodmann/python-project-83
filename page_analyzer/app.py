@@ -35,7 +35,7 @@ app.config['DATABASE_URL'] = os.getenv('DATABASE_URL')
 def index():
     """Обработчик главной страницы сайта"""
 
-    return render_template('index.html')
+    return render_template('index.html', description='Описание главной страницы')
 
 
 @app.post("/urls")
@@ -74,7 +74,7 @@ def get_urls():
     urls = get_all_urls(app)
     # Добавляем их в шаблон и воззвращаем его
     
-    return render_template('urls.html', urls=urls)
+    return render_template('urls.html', urls=urls, description='Описание главной страницы')
 
 
 @app.get('/urls/<int:url_id>')
@@ -86,7 +86,7 @@ def show_url_by_id(url_id):
     # если все нормально, то возвращаем шаблон с нужными данными
     if url_obj:
         url_checks = get_checks_for_url(app, url_id)
-        return render_template('url.html', url=url_obj, url_checks=url_checks)
+        return render_template('url.html', url=url_obj, url_checks=url_checks, description='Описание главной страницы')
     # если проблемы, то флэшим сообщение и редиректим на список с урлами
     else:
         flash('URL not found', 'danger')
@@ -118,13 +118,22 @@ def create_check(id):
         response.raise_for_status()# Проверяем, что запрос прошел успешно
         print("Запрос прошел успешно.")
         flash('Страница успешно проверена', 'success')
-        # Создаем новую запись проверки в базе данных
-        create_check_entry(app, url_obj['id'], response.status_code, created_at)
-        print("Запись о проверке успешно добавлена.")
         # Парсим HTML-ответ
         html_content = response.text
         parsed_data = check_page(html_content)
         flash(f"Результаты парсинга: {parsed_data}")
+        # Создаем новую запись проверки в базе данных
+        create_check_entry(
+            app,
+            url_obj['id'],
+            response.status_code,
+            created_at,
+            parsed_data.get('h1'),
+            parsed_data.get('title'),
+            parsed_data.get('description'),
+        )
+        print("Запись о проверке успешно добавлена.")
+
         return redirect(url_for('show_url_by_id', url_id=id))
     
     except requests.RequestException as e:
