@@ -1,4 +1,3 @@
-
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from contextlib import contextmanager
@@ -78,7 +77,6 @@ def get_checks_for_url(app, url_id):
     return checks
 
 
-
 def get_all_urls(app):
     """Получает список всех URL-ов из базы данных, отсортированный 
         по убыванию ID, с датой последней проверки и 
@@ -138,6 +136,7 @@ title=None, description=None):
                 (url_id, status_code, h1, title, description, created_at)
             )
         conn.commit()
+
 
 def save_check_result(app, url, check_result):
     """Сохраняет результаты проверки в базу данных"""
