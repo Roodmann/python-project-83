@@ -24,12 +24,11 @@ from .database import (check_url_existence,
 
 
 
-
 load_dotenv()
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['DATABASE_URL'] = os.getenv('DATABASE_URL')
-# app.run()
+
 
 @app.route('/')
 def index():

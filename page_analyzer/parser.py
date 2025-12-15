@@ -23,18 +23,21 @@ def check_title(soup):
 
 def check_meta_description(soup):
     """
-    Находит мета-тег с атрибутом name='description' и возвращает значение его content.
+    Находит мета-тег с атрибутом name='description' и возвращает значение 
+    его content.
     Если мета-тег отсутствует или не содержит атрибута content, возвращает None.
     """
     meta_desc = soup.find('meta', attrs={'name': 'description'})
-    
-    return meta_desc['content'].strip() if meta_desc and 'content' in meta_desc.attrs else None
+    if meta_desc and 'content' in meta_desc.attrs:
+        return meta_desc['content'].strip()
+    return None
 
 
 def check_page(html):
     """
     Анализирует HTML-код страницы, создает объект BeautifulSoup и возвращает словарь
-    с ключами 'h1', 'title' и 'description', содержащими соответствующие текстовые значения.
+    с ключами 'h1', 'title' и 'description', содержащими соответствующие текстовые 
+    значения.
     """
     soup = BeautifulSoup(html, 'html.parser')
     

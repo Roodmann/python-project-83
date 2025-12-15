@@ -15,13 +15,10 @@ def get_db(app):
     )
     try:
         with conn.cursor() as cur:
-        # Устанавливаем тайм-аут для выполнения каждого SQL-запроса 
-        # в рамках текущей сессии.
             cur.execute("SET statement_timeout = %s", (10000,))
         yield conn
     finally:
         conn.close()
-
 
 
 def check_url_existence(app, url_name):
@@ -33,9 +30,10 @@ def check_url_existence(app, url_name):
             result = cur.fetchone()
 
     if result:
-        url_id = result['id'] # Идентификатор URL, если он существует в базе данных
+        # Идентификатор URL, если он существует в базе данных
+        url_id = result['id']
     else:
-        url_id = None # Значение None, если URL с таким именем не найден
+        url_id = None  # Значение None, если URL с таким именем не найден
     
     return url_id
 
@@ -120,8 +118,8 @@ def get_all_urls(app):
     return urls
 
 
-def create_check_entry(app, url_id, status_code, created_at, h1=None, title=None, 
-description=None):
+def create_check_entry(app, url_id, status_code, created_at, h1=None, 
+title=None, description=None):
     """Создает новую запись проверки в базе данных с указанными параметрами"""
     
     with get_db(app) as conn:
