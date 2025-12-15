@@ -73,30 +73,31 @@ def get_checks_for_url(app, url_id):
 
 
 def get_all_urls(app):
-    """Получает список всех URL-ов из базы данных, отсортированный по убыванию ID"""
+    """Получает список всех URL-ов из базы данных, отсортированный по убыванию ID, 
+        с датой последней проверки и статусом последней проверки.
+    """
     
     with get_db(app) as conn:
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute("""
                 SELECT 
-                urls.id,
-                urls.name,
-                urls.created_at,
-                url_checks.last_check_date,
-                url_checks.last_check_status
-            FROM 
-                urls
-            LEFT JOIN (
-                SELECT 
-                    DISTINCT ON (url_id) 
-                    url_id, 
-                    created_at AS last_check_date, 
-                    status_code AS last_check_status
+                    urls.id,
+                    urls.name,
+                    urls.created_at,
+                    last_check.last_check_date,
+                    last_check.status_code
                 FROM 
-                    url_checks
-                ORDER BY 
-                    url_id, created_at DESC
-            ) AS url_checks ON urls.id = url_checks.url_id
+                    urls
+                LEFT JOIN (
+                    SELECT 
+                        url_id,
+                        created_at AS last_check_date,
+                        status_code,
+                        ROW_NUMBER() OVER (PARTITION BY url_id ORDER BY created_at DESC) AS rn
+                    FROM 
+                        url_checks
+                ) AS last_check ON urls.id = last_check.url_id AND last_check.rn = 1
+                ORDER BY urls.id DESC
             """)
             urls = cur.fetchall()
 
