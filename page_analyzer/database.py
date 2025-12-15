@@ -77,7 +77,27 @@ def get_all_urls(app):
     
     with get_db(app) as conn:
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
-            cur.execute("SELECT id, name FROM urls ORDER BY id DESC")
+            cur.execute("""
+                SELECT 
+                urls.id,
+                urls.name,
+                urls.created_at,
+                url_checks.last_check_date,
+                url_checks.last_check_status
+            FROM 
+                urls
+            LEFT JOIN (
+                SELECT 
+                    DISTINCT ON (url_id) 
+                    url_id, 
+                    created_at AS last_check_date, 
+                    status_code AS last_check_status
+                FROM 
+                    url_checks
+                ORDER BY 
+                    url_id, created_at DESC
+            ) AS url_checks ON urls.id = url_checks.url_id
+            """)
             urls = cur.fetchall()
 
     return urls
