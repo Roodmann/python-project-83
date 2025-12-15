@@ -29,13 +29,16 @@ load_dotenv()
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['DATABASE_URL'] = os.getenv('DATABASE_URL')
-#app.run()
+# app.run()
 
 @app.route('/')
 def index():
     """Обработчик главной страницы сайта"""
 
-    return render_template('index.html', description='Описание главной страницы')
+    return render_template(
+        'index.html', 
+        description='Описание главной страницы'
+    )
 
 
 @app.post("/urls")
@@ -46,7 +49,9 @@ def add_url():
     # Проверка валидности URL
     if not is_valid_url(url_name):
         flash("Некорректный URL", "danger")
-        return render_template('index.html', description='Описание главной страницы'), 422
+        return render_template(
+            'index.html', description='Описание главной страницы'
+        ), 422
     # Нормализация URL
     normalized_url_name = normalize_url(url_name)
     # Проверка существования URL в базе
@@ -71,7 +76,11 @@ def get_urls():
     urls = get_all_urls(app)
     # Добавляем их в шаблон и воззвращаем его
     
-    return render_template('urls.html', urls=urls, description='Описание главной страницы')
+    return render_template(
+        'urls.html', 
+        urls=urls, 
+        description='Описание главной страницы'
+    )
 
 
 @app.get('/urls/<int:url_id>')
@@ -83,7 +92,12 @@ def show_url_by_id(url_id):
     # если все нормально, то возвращаем шаблон с нужными данными
     if url_obj:
         url_checks = get_checks_for_url(app, url_id)
-        return render_template('url.html', url=url_obj, url_checks=url_checks, description='Описание главной страницы')
+        return render_template(
+            'url.html', 
+            url=url_obj, 
+            url_checks=url_checks, 
+            description='Описание главной страницы'
+        )
     # если проблемы, то флэшим сообщение и редиректим на список с урлами
     else:
         flash('URL not found', 'danger')
@@ -99,7 +113,7 @@ def create_check(id):
     
     url_obj = get_one_url(app, id)  # Получение объекта URL
     print(f"Объект URL из базы: {url_obj}")
-    #Если URL не найден, выводит сообщение об ошибке и перенаправляет на страницу списка URL.
+    # Если URL не найден, выводит сообщение об ошибке и перенаправляет на страницу списка URL.
     if not url_obj:
         print("URL не найден в базе данных.")
         flash("URL не найден", "danger")

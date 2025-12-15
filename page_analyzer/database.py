@@ -42,7 +42,9 @@ def add_urls(app, url_name):
     
     with get_db(app) as conn:
         with conn.cursor() as cur:
-            cur.execute("INSERT INTO urls (name) VALUES (%s) RETURNING id", (url_name,))
+            cur.execute("INSERT INTO urls (name) VALUES (%s) RETURNING id", 
+                        (url_name,)
+            )
             url_id = cur.fetchone()[0]
         conn.commit()
 
@@ -65,7 +67,9 @@ def get_checks_for_url(app, url_id):
     
     with get_db(app) as conn:
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
-            cur.execute("SELECT * FROM url_checks WHERE url_id = %s", (url_id,))
+            cur.execute("SELECT * FROM url_checks WHERE url_id = %s", 
+                        (url_id,)
+            )
             checks = cur.fetchall()
 
     return checks
@@ -104,13 +108,16 @@ def get_all_urls(app):
     return urls
 
 
-def create_check_entry(app, url_id, status_code, created_at, h1=None, title=None, description=None):
+def create_check_entry(app, url_id, status_code, created_at, h1=None, title=None, 
+description=None):
     """Создает новую запись проверки в базе данных с указанными параметрами"""
     
     with get_db(app) as conn:
         with conn.cursor() as cur: 
             cur.execute(
-                "INSERT INTO url_checks (url_id, status_code, h1, title, description, created_at) VALUES (%s, %s, %s, %s, %s, %s)",
+                "INSERT INTO url_checks (url_id, status_code, h1, title, description, "\
+                "created_at) " \
+                "VALUES (%s, %s, %s, %s, %s, %s)",
                 (url_id, status_code, h1, title, description, created_at))
         conn.commit()
 
@@ -122,7 +129,12 @@ def save_check_result(app, url, check_result):
             cur.execute('''
                 INSERT INTO url_checks (url, h1, title, description)
                 VALUES (%s, %s, %s, %s)
-                ''', (url, check_result['h1'], check_result['title'], 
-                    check_result['description'])
+                ''', 
+                (
+                    url, 
+                    check_result['h1'], 
+                    check_result['title'], 
+                    check_result['description']
                 )
+            )
         conn.commit()
