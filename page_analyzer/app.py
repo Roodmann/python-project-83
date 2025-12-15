@@ -46,14 +46,16 @@ def add_url():
     url_name = request.form.get('url')
     # Проверка валидности URL
     if not is_valid_url(url_name):
-        # Возвращаем JSON с ошибкой и статусом 422
-        return jsonify({"error": "Некорректный URL"}), 422
+        flash("Некорректный URL", "danger")
+        return render_template('index.html', description='Описание главной страницы'), 422
     # Нормализация URL
     normalized_url_name = normalize_url(url_name)
     # Проверка существования URL в базе
     existing_url_id = check_url_existence(app, normalized_url_name)
     if existing_url_id:
         # Если URL уже есть, перенаправляем на страницу отображения
+        flash("Страница уже существует", "warning")
+        
         return redirect(url_for('show_url_by_id', url_id=existing_url_id))
     # Добавление нового URL
     new_url_id = add_urls(app, normalized_url_name)
