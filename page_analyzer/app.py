@@ -119,14 +119,14 @@ def create_check(id):
         flash("URL не найден", "danger")
         return redirect(url_for('get_urls'))
 
-    created_at = datetime.now()# Текущая дата и время для записи проверки
+    created_at = datetime.now()  # Текущая дата и время для записи проверки
     print(f"Дата и время проверки: {created_at}")
 
     try:
         print(f"Выполнение GET-запроса к URL: {url_obj['name']}")
-        response = requests.get(url_obj['name'], timeout=3)# Выполняем запрос к указанному URL с тайм-аутом
+        response = requests.get(url_obj['name'], timeout=3)  # Выполняем запрос к указанному URL с тайм-аутом
         print(f"Ответ получен с кодом: {response.status_code}")
-        response.raise_for_status()# Проверяем, что запрос прошел успешно
+        response.raise_for_status()  # Проверяем, что запрос прошел успешно
         print("Запрос прошел успешно.")
         flash('Страница успешно проверена', 'success')
         # Парсим HTML-ответ

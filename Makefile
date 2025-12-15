@@ -14,7 +14,7 @@ build:
 render-start:
 	  gunicorn -w 5 -b 0.0.0.0:$(PORT) page_analyzer:app
 lint-fix:
-	uv run ruff check -- fix
+	uv run ruff check --fix
 
 postgresql:
 	sudo service postgresql start
