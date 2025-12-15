@@ -23,7 +23,6 @@ from .database import (check_url_existence,
                 )
 
 
-
 load_dotenv()
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
