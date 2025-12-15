@@ -85,7 +85,9 @@ def get_urls():
 
 @app.get('/urls/<int:url_id>')
 def show_url_by_id(url_id):
-    """Обработчик GET-запроса для отображения деталей конкретного URL по его ID"""
+    """Обработчик GET-запроса для отображения 
+        деталей конкретного URL по его ID
+    """
     
     # получаем юрл из бд
     url_obj = get_one_url(app, url_id)
@@ -113,7 +115,8 @@ def create_check(id):
     
     url_obj = get_one_url(app, id)  # Получение объекта URL
     print(f"Объект URL из базы: {url_obj}")
-    # Если URL не найден, выводит сообщение об ошибке и перенаправляет на страницу списка URL.
+    # Если URL не найден, выводит сообщение об ошибке и 
+    # перенаправляет на страницу списка URL.
     if not url_obj:
         print("URL не найден в базе данных.")
         flash("URL не найден", "danger")
@@ -124,7 +127,8 @@ def create_check(id):
 
     try:
         print(f"Выполнение GET-запроса к URL: {url_obj['name']}")
-        response = requests.get(url_obj['name'], timeout=3)  # Выполняем запрос к указанному URL с тайм-аутом
+        # Выполняем запрос к указанному URL с тайм-аутом
+        response = requests.get(url_obj['name'], timeout=3)
         print(f"Ответ получен с кодом: {response.status_code}")
         response.raise_for_status()  # Проверяем, что запрос прошел успешно
         print("Запрос прошел успешно.")

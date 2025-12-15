@@ -10,11 +10,14 @@ def get_db(app):
     print("Попытка подключения к базе по URL:", app.config["DATABASE_URL"])
     conn = psycopg2.connect(
         app.config["DATABASE_URL"],
-        connect_timeout=10 # Тайм-аут для попытки установить соединение с базой данных
+        # Тайм-аут для попытки установить соединение с базой данных
+        connect_timeout=10
     )
     try:
         with conn.cursor() as cur:
-            cur.execute("SET statement_timeout = %s", (10000,)) # Устанавливаем тайм-аут для выполнения каждого SQL-запроса в рамках текущей сессии.
+        # Устанавливаем тайм-аут для выполнения каждого SQL-запроса 
+        # в рамках текущей сессии.
+            cur.execute("SET statement_timeout = %s", (10000,))
         yield conn
     finally:
         conn.close()
@@ -38,7 +41,9 @@ def check_url_existence(app, url_name):
 
 
 def add_urls(app, url_name):
-    """Добавляет новый URL с указанным именем в базу данных и возвращает его ID"""
+    """Добавляет новый URL с указанным именем в базу 
+        данных и возвращает его ID
+    """
     
     with get_db(app) as conn:
         with conn.cursor() as cur:
@@ -77,13 +82,15 @@ def get_checks_for_url(app, url_id):
 
 
 def get_all_urls(app):
-    """Получает список всех URL-ов из базы данных, отсортированный по убыванию ID, 
-        с датой последней проверки и статусом последней проверки.
+    """Получает список всех URL-ов из базы данных, отсортированный 
+        по убыванию ID, с датой последней проверки и 
+        статусом последней проверки.
     """
     
     with get_db(app) as conn:
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
-            cur.execute("""
+            cur.execute(
+                """
                 SELECT 
                     urls.id,
                     urls.name,
@@ -97,12 +104,17 @@ def get_all_urls(app):
                         url_id,
                         created_at AS last_check_date,
                         status_code,
-                        ROW_NUMBER() OVER (PARTITION BY url_id ORDER BY created_at DESC) AS rn
+                        ROW_NUMBER() OVER (
+                            PARTITION BY url_id 
+                            ORDER BY created_at DESC
+                        ) AS rn
                     FROM 
                         url_checks
-                ) AS last_check ON urls.id = last_check.url_id AND last_check.rn = 1
+                ) AS last_check 
+                ON urls.id = last_check.url_id AND last_check.rn = 1
                 ORDER BY urls.id DESC
-            """)
+                """
+            )
             urls = cur.fetchall()
 
     return urls
@@ -115,10 +127,18 @@ description=None):
     with get_db(app) as conn:
         with conn.cursor() as cur: 
             cur.execute(
-                "INSERT INTO url_checks (url_id, status_code, h1, title, description, "\
-                "created_at) " \
-                "VALUES (%s, %s, %s, %s, %s, %s)",
-                (url_id, status_code, h1, title, description, created_at))
+                """
+                INSERT INTO url_checks (
+                    url_id,
+                    status_code,
+                    h1,
+                    title,
+                    description,
+                    created_at
+                ) VALUES (%s, %s, %s, %s, %s, %s)
+                """,
+                (url_id, status_code, h1, title, description, created_at)
+            )
         conn.commit()
 
 def save_check_result(app, url, check_result):
