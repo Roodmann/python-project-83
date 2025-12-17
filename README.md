@@ -3,7 +3,7 @@
 [![Action status](https://github.com/Roodmann/python-project-83/actions/workflows/pyci.yaml/badge.svg)](https://github.com/Roodmann/python-project-83/actions/workflows/pyci.yaml)
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Roodmann_python-project-83&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Roodmann_python-project-83)
-[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=Roodmann_python-project-83&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=Roodmann_python-project-83)
+
 
 
 <br><br><br>
