@@ -4,10 +4,7 @@ from urllib.parse import urlparse
 def normalize_url(url):
     """Нормализует указанный URL"""
     
-    # Разбираем URL
     parsed_url = urlparse(url)
-
-    # Приводим схему и домен к нижнему регистру
     scheme = parsed_url.scheme.lower()
     netloc = parsed_url.netloc.lower()
 

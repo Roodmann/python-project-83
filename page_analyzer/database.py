@@ -6,10 +6,10 @@ from contextlib import contextmanager
 @contextmanager
 def get_db(app):
     """соединение с базой данных"""
+
     print("Попытка подключения к базе по URL:", app.config["DATABASE_URL"])
     conn = psycopg2.connect(
         app.config["DATABASE_URL"],
-        # Тайм-аут для попытки установить соединение с базой данных
         connect_timeout=10
     )
     try:
@@ -29,10 +29,9 @@ def check_url_existence(app, url_name):
             result = cur.fetchone()
 
     if result:
-        # Идентификатор URL, если он существует в базе данных
         url_id = result['id']
     else:
-        url_id = None  # Значение None, если URL с таким именем не найден
+        url_id = None
     
     return url_id
 
